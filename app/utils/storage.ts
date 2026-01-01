@@ -101,3 +101,8 @@ export function markQuestionAnswered(questionId: string): void {
     savePlaySession(session);
   }
 }
+
+export function clearGameData(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(STORAGE_KEY);
+}
