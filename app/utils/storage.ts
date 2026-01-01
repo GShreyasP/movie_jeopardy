@@ -20,13 +20,32 @@ export function getGameData(): GameData {
   }
 }
 
+// Helper function to estimate storage size
+export function estimateStorageSize(data: GameData): number {
+  const jsonString = JSON.stringify(data);
+  return new Blob([jsonString]).size;
+}
+
 export function saveGameData(data: GameData): void {
   if (typeof window === 'undefined') return;
+  
+  // Check estimated size before saving
+  const estimatedSize = estimateStorageSize(data);
+  const maxSize = 5 * 1024 * 1024; // 5MB limit (localStorage is typically 5-10MB)
+  
+  if (estimatedSize > maxSize) {
+    const sizeInMB = (estimatedSize / (1024 * 1024)).toFixed(2);
+    alert(`Data is too large (${sizeInMB}MB). Please clear some questions or reduce image sizes. The "Reset All" button can help clear all questions.`);
+    throw new Error('Data too large');
+  }
+  
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
     if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      alert('Storage quota exceeded! Please reduce image sizes or clear some questions. Images are stored as base64 which can be very large.');
+      const currentSize = estimateStorageSize(data);
+      const sizeInMB = (currentSize / (1024 * 1024)).toFixed(2);
+      alert(`Storage quota exceeded! Current data size: ${sizeInMB}MB\n\nPlease:\n1. Click "Reset All" to clear all questions, OR\n2. Delete individual questions to free up space.\n\nImages are stored as base64 which can be very large.`);
       throw error;
     }
     throw error;
@@ -113,4 +132,22 @@ export function markQuestionAnswered(questionId: string): void {
 export function clearGameData(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(STORAGE_KEY);
+}
+
+// Get storage usage information
+export function getStorageUsage(): { used: number; usedMB: string; percentage: number } {
+  if (typeof window === 'undefined') {
+    return { used: 0, usedMB: '0.00', percentage: 0 };
+  }
+  
+  const gameData = getGameData();
+  const estimatedSize = estimateStorageSize(gameData);
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const percentage = Math.min(100, (estimatedSize / maxSize) * 100);
+  
+  return {
+    used: estimatedSize,
+    usedMB: (estimatedSize / (1024 * 1024)).toFixed(2),
+    percentage: Math.round(percentage),
+  };
 }
