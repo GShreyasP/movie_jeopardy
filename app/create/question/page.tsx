@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Clue, ClueType, Question, Difficulty } from '../../types';
 import { getQuestion, saveQuestion, generateQuestionId } from '../../utils/storage';
 
-export default function QuestionEditorPage() {
+function QuestionEditorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const questionId = searchParams.get('id') || '';
@@ -209,5 +209,21 @@ export default function QuestionEditorPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function QuestionEditorPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-xl p-6 text-center">
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </main>
+    }>
+      <QuestionEditorContent />
+    </Suspense>
   );
 }
