@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Difficulty, generateQuestionId } from '../types';
-import { getQuestion } from '../utils/storage';
+import { Difficulty } from '../types';
+import { getQuestion, generateQuestionId } from '../utils/storage';
 
 export default function CreatePage() {
   const router = useRouter();
