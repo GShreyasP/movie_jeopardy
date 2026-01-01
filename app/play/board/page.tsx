@@ -67,12 +67,12 @@ export default function PlayBoardPage() {
                     <button
                       key={colIndex}
                       onClick={() => handleWidgetClick(difficulty, colIndex)}
-                      disabled={!isAvailable || isAnswered}
+                      disabled={!isAvailable}
                       className={`aspect-square rounded-lg font-bold text-xl transition-all duration-200 transform hover:scale-105 shadow-lg ${
                         !isAvailable
                           ? 'bg-gray-500 cursor-not-allowed opacity-50'
                           : isAnswered
-                          ? 'bg-gray-700 cursor-not-allowed opacity-75'
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-yellow-500 hover:bg-yellow-600 text-black'
                       }`}
                     >

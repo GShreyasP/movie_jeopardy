@@ -168,7 +168,7 @@ function QuestionViewContent() {
                       value={scoreInput[team.id] || ''}
                       onChange={(e) => handleScoreChange(team.id, e.target.value)}
                       placeholder="Score change"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     />
                     <button
                       onClick={() => handleApplyScore(team.id)}

@@ -138,7 +138,7 @@ function QuestionEditorContent() {
                     value={clue.content}
                     onChange={(e) => handleClueContentChange(index, e.target.value)}
                     placeholder="Enter text clue..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     rows={4}
                   />
                 )}
@@ -170,7 +170,7 @@ function QuestionEditorContent() {
                     value={clue.content}
                     onChange={(e) => handleClueContentChange(index, e.target.value)}
                     placeholder="Enter link URL (e.g., https://example.com)"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   />
                 )}
               </div>
@@ -187,7 +187,7 @@ function QuestionEditorContent() {
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Enter the answer..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-black"
             />
           </div>
 
