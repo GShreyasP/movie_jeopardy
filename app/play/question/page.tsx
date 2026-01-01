@@ -17,6 +17,7 @@ function QuestionViewContent() {
   const [currentClueIndex, setCurrentClueIndex] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [scoreInput, setScoreInput] = useState<{ [key: number]: string }>({});
+  const [revealedClues, setRevealedClues] = useState<Set<number>>(new Set([0])); // Initial clue is always revealed
 
   useEffect(() => {
     const q = getQuestion(questionId);
@@ -49,6 +50,47 @@ function QuestionViewContent() {
 
   const handleShowClue = (index: number) => {
     setCurrentClueIndex(index);
+    setRevealedClues(prev => new Set([...prev, index]));
+  };
+
+  const getDifficultyPoints = () => {
+    if (!difficulty) return { start: 0, deductions: [0, 0, 0] };
+    
+    switch (difficulty) {
+      case 'easy':
+        return { start: 500, deductions: [125, 250, 375] };
+      case 'medium':
+        return { start: 1000, deductions: [250, 500, 750] };
+      case 'hard':
+        return { start: 1500, deductions: [375, 750, 1125] };
+      default:
+        return { start: 0, deductions: [0, 0, 0] };
+    }
+  };
+
+  const calculateCurrentScore = () => {
+    const { start, deductions } = getDifficultyPoints();
+    let totalDeduction = 0;
+    
+    // Calculate total deduction based on revealed clues (excluding initial clue at index 0)
+    revealedClues.forEach(clueIndex => {
+      if (clueIndex > 0 && clueIndex <= 3) {
+        totalDeduction += deductions[clueIndex - 1];
+      }
+    });
+    
+    return Math.max(0, start - totalDeduction);
+  };
+
+  const getTotalDeduction = () => {
+    const { deductions } = getDifficultyPoints();
+    let total = 0;
+    revealedClues.forEach(clueIndex => {
+      if (clueIndex > 0 && clueIndex <= 3) {
+        total += deductions[clueIndex - 1];
+      }
+    });
+    return total;
   };
 
   const handleCloseClue = () => {
@@ -99,8 +141,30 @@ function QuestionViewContent() {
 
   const currentClue = currentClueIndex !== null ? question.clues[currentClueIndex] : null;
 
+  const { start } = getDifficultyPoints();
+  const currentScore = calculateCurrentScore();
+  const totalDeduction = getTotalDeduction();
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-8 pb-32">
+      {/* Score Display - Top Right */}
+      <div className="fixed top-4 right-4 bg-white rounded-lg shadow-xl p-4 z-40 min-w-[200px]">
+        <div className="text-center">
+          <div className="text-sm font-semibold text-gray-600 mb-2">
+            {difficulty && `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Points`}
+          </div>
+          <div className="text-2xl font-bold text-blue-600 mb-1">
+            {currentScore}
+          </div>
+          <div className="text-xs text-gray-500">
+            Start: {start}
+            {totalDeduction > 0 && (
+              <span className="text-red-600"> | -{totalDeduction}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <button
