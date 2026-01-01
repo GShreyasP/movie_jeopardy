@@ -22,7 +22,15 @@ export function getGameData(): GameData {
 
 export function saveGameData(data: GameData): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      alert('Storage quota exceeded! Please reduce image sizes or clear some questions. Images are stored as base64 which can be very large.');
+      throw error;
+    }
+    throw error;
+  }
 }
 
 export function getQuestion(id: string): Question | null {

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Clue, ClueType, Question, Difficulty } from '../../types';
 import { getQuestion, saveQuestion, generateQuestionId } from '../../utils/storage';
+import { compressImage } from '../../utils/imageCompression';
 
 function QuestionEditorContent() {
   const router = useRouter();
@@ -50,25 +51,24 @@ function QuestionEditorContent() {
     setInitialClue({ ...initialClue, isClip });
   };
 
-  const handleInitialClueImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInitialClueImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      processImageFileForClue(file, true);
+      await processImageFileForClue(file, true);
     }
   };
 
-  const processImageFileForClue = (file: File, isInitial: boolean) => {
+  const processImageFileForClue = async (file: File, isInitial: boolean) => {
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
+      try {
+        const compressedImage = await compressImage(file, 800, 800, 0.7);
         if (isInitial) {
-          setInitialClue({ ...initialClue, content: imageUrl });
-        } else {
-          // This will be handled by the specific clue index
+          setInitialClue({ ...initialClue, content: compressedImage });
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Error processing image. Please try a smaller image file.');
+      }
     }
   };
 
@@ -82,14 +82,14 @@ function QuestionEditorContent() {
     e.stopPropagation();
   };
 
-  const handleInitialClueDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleInitialClueDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (initialClue.type === 'image') {
       const file = e.dataTransfer.files?.[0];
       if (file) {
-        processImageFileForClue(file, true);
+        await processImageFileForClue(file, true);
       }
     }
   };
@@ -112,21 +112,22 @@ function QuestionEditorContent() {
     setClues(newClues);
   };
 
-  const handleImageUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      processClueImageFile(index, file);
+      await processClueImageFile(index, file);
     }
   };
 
-  const processClueImageFile = (index: number, file: File) => {
+  const processClueImageFile = async (index: number, file: File) => {
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        handleClueContentChange(index, imageUrl);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressedImage = await compressImage(file, 800, 800, 0.7);
+        handleClueContentChange(index, compressedImage);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Error processing image. Please try a smaller image file.');
+      }
     }
   };
 
@@ -140,14 +141,14 @@ function QuestionEditorContent() {
     e.stopPropagation();
   };
 
-  const handleClueDrop = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+  const handleClueDrop = async (index: number, e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (clues[index].type === 'image') {
       const file = e.dataTransfer.files?.[0];
       if (file) {
-        processClueImageFile(index, file);
+        await processClueImageFile(index, file);
       }
     }
   };
@@ -159,14 +160,15 @@ function QuestionEditorContent() {
     }
   };
 
-  const processImageFile = (file: File) => {
+  const processImageFile = async (file: File) => {
     if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        setMoviePoster(imageUrl);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressedImage = await compressImage(file, 800, 800, 0.7);
+        setMoviePoster(compressedImage);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        alert('Error processing image. Please try a smaller image file.');
+      }
     }
   };
 
@@ -180,13 +182,13 @@ function QuestionEditorContent() {
     e.stopPropagation();
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      processImageFile(file);
+      await processImageFile(file);
     }
   };
 
@@ -217,8 +219,13 @@ function QuestionEditorContent() {
       youtubeVideo: youtubeVideo.trim(),
     };
 
-    saveQuestion(question);
-    router.push('/create');
+    try {
+      saveQuestion(question);
+      router.push('/create');
+    } catch (error) {
+      // Error is already handled in saveGameData with alert
+      console.error('Failed to save question:', error);
+    }
   };
 
   const handleCancel = () => {
