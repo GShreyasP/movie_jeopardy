@@ -272,7 +272,7 @@ function QuestionViewContent() {
                     style={{ maxHeight: '400px' }}
                   />
                 )}
-                {question.initialClue.type === 'link' && question.initialClue.isClip && (
+                {question.initialClue.type === 'link' && question.initialClue.isClip && question.initialClue.content && (
                   <div className="space-y-2">
                     <button
                       onClick={() => {
@@ -281,7 +281,7 @@ function QuestionViewContent() {
                         const left = (window.screen.width - width) / 2;
                         const top = (window.screen.height - height) / 2;
                         window.open(
-                          question.initialClue.content,
+                          question.initialClue!.content,
                           'YouTubeClip',
                           `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=yes,status=no,menubar=no,scrollbars=yes,resizable=yes`
                         );
