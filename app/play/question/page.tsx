@@ -126,11 +126,43 @@ function QuestionViewContent() {
     if (!url) return '';
     
     // Handle YouTube clip URLs (youtube.com/clip/...)
+    // Clips format: youtube.com/clip/[clipId]?v=[videoId]&t=[timestamp]
     if (url.includes('youtube.com/clip/')) {
-      // Extract clip ID from clip URL
-      const clipMatch = url.match(/youtube\.com\/clip\/([^?&#]+)/);
-      if (clipMatch && clipMatch[1]) {
-        return `https://www.youtube.com/embed/${clipMatch[1]}?autoplay=1`;
+      try {
+        const urlObj = new URL(url);
+        // Extract video ID from 'v' query parameter
+        const videoId = urlObj.searchParams.get('v');
+        
+        if (videoId && videoId.length === 11) {
+          let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          
+          // Extract timestamp from 't' parameter
+          const tParam = urlObj.searchParams.get('t');
+          if (tParam) {
+            // Parse timestamp (could be in seconds or format like "125s", "2m5s")
+            let seconds = 0;
+            if (/^\d+$/.test(tParam)) {
+              seconds = parseInt(tParam);
+            } else {
+              // Handle formats like "125s", "2m5s", "1h2m3s"
+              const cleaned = tParam.replace(/s$/, '');
+              const hoursMatch = cleaned.match(/(\d+)h/);
+              const minutesMatch = cleaned.match(/(\d+)m/);
+              const secsMatch = cleaned.match(/(\d+)(?!h|m)/);
+              if (hoursMatch) seconds += parseInt(hoursMatch[1]) * 3600;
+              if (minutesMatch) seconds += parseInt(minutesMatch[1]) * 60;
+              if (secsMatch) seconds += parseInt(secsMatch[1]);
+            }
+            
+            if (seconds > 0) {
+              embedUrl += `&start=${seconds}`;
+            }
+          }
+          
+          return embedUrl;
+        }
+      } catch (error) {
+        console.error('Error parsing YouTube clip URL:', error);
       }
     }
     
