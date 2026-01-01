@@ -12,6 +12,7 @@ function QuestionEditorContent() {
   const difficulty = searchParams.get('difficulty') as Difficulty | null;
   const column = parseInt(searchParams.get('column') || '0');
 
+  const [initialClue, setInitialClue] = useState<Clue>({ type: 'text', content: '' });
   const [clues, setClues] = useState<Clue[]>([
     { type: 'text', content: '' },
     { type: 'text', content: '' },
@@ -30,6 +31,7 @@ function QuestionEditorContent() {
         { type: 'text', content: '' },
         { type: 'text', content: '' },
       ];
+      setInitialClue(existing.initialClue || { type: 'text', content: '' });
       setClues(existing.clues.length === 3 ? existing.clues : defaultClues);
       setAnswer(existing.answer || '');
       setMoviePoster(existing.moviePoster || '');
@@ -37,6 +39,26 @@ function QuestionEditorContent() {
       setYoutubeVideo(existing.youtubeVideo || '');
     }
   }, [questionId]);
+
+  const handleInitialClueTypeChange = (type: ClueType) => {
+    setInitialClue({ type, content: '' });
+  };
+
+  const handleInitialClueContentChange = (content: string) => {
+    setInitialClue({ ...initialClue, content });
+  };
+
+  const handleInitialClueImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setInitialClue({ ...initialClue, content: imageUrl });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleClueTypeChange = (index: number, type: ClueType) => {
     const newClues = [...clues];
@@ -105,6 +127,7 @@ function QuestionEditorContent() {
 
     const question: Question = {
       id: questionId,
+      initialClue: initialClue.content.trim() ? initialClue : undefined,
       clues: clues.filter(clue => clue.content.trim() !== ''),
       answer: answer.trim(),
       moviePoster: moviePoster.trim() || undefined,
@@ -136,9 +159,95 @@ function QuestionEditorContent() {
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-6 space-y-6">
-          {/* Clues */}
+          {/* Initial Clue */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800">Clues (Enter 3 clues)</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Initial Clue</h2>
+            <div className="border-2 border-blue-500 rounded-lg p-4 space-y-3 bg-blue-50">
+              <label className="block text-sm font-semibold text-gray-700">
+                Initial Clue (Shown automatically)
+              </label>
+              
+              {/* Initial Clue Type Selector */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => handleInitialClueTypeChange('text')}
+                  className={`px-4 py-2 rounded ${
+                    initialClue.type === 'text'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  } transition-colors`}
+                >
+                  Text
+                </button>
+                <button
+                  onClick={() => handleInitialClueTypeChange('image')}
+                  className={`px-4 py-2 rounded ${
+                    initialClue.type === 'image'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  } transition-colors`}
+                >
+                  Image
+                </button>
+                <button
+                  onClick={() => handleInitialClueTypeChange('link')}
+                  className={`px-4 py-2 rounded ${
+                    initialClue.type === 'link'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  } transition-colors`}
+                >
+                  Link
+                </button>
+              </div>
+
+              {/* Initial Clue Content Input */}
+              {initialClue.type === 'text' && (
+                <textarea
+                  value={initialClue.content}
+                  onChange={(e) => handleInitialClueContentChange(e.target.value)}
+                  placeholder="Enter initial clue text..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                  rows={4}
+                />
+              )}
+
+              {initialClue.type === 'image' && (
+                <div className="space-y-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleInitialClueImageUpload}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {initialClue.content && (
+                    <div className="mt-2">
+                      <img
+                        src={initialClue.content}
+                        alt="Initial Clue"
+                        className="max-w-full h-auto rounded-lg border border-gray-300"
+                        style={{ maxHeight: '300px' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {initialClue.type === 'link' && (
+                <input
+                  type="url"
+                  value={initialClue.content}
+                  onChange={(e) => handleInitialClueContentChange(e.target.value)}
+                  placeholder="Enter link URL (e.g., https://example.com)"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Additional Clues */}
+          <div className="space-y-6 border-t-2 border-gray-300 pt-6">
+            <h2 className="text-2xl font-bold text-gray-800">Additional Clues (Enter up to 3 clues)</h2>
             {clues.map((clue, index) => (
               <div key={index} className="border-2 border-gray-300 rounded-lg p-4 space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">

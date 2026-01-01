@@ -190,30 +190,44 @@ function QuestionViewContent() {
         </div>
 
         <div className="bg-white rounded-lg shadow-xl p-6 space-y-6 mb-6">
-          {/* Initial Clue (First Clue) */}
-          {question.clues.length > 0 && (
+          {/* Initial Clue */}
+          {question.initialClue && (
             <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
               <h2 className="text-xl font-bold text-gray-800 mb-3">Initial Clue</h2>
               <div className="text-gray-700">
-                {question.clues[0].type === 'text' && (
-                  <p className="text-lg whitespace-pre-wrap">{question.clues[0].content}</p>
+                {question.initialClue.type === 'text' && (
+                  <p className="text-lg whitespace-pre-wrap">{question.initialClue.content}</p>
                 )}
-                {question.clues[0].type === 'image' && (
+                {question.initialClue.type === 'image' && (
                   <img
-                    src={question.clues[0].content}
-                    alt="Clue 1"
+                    src={question.initialClue.content}
+                    alt="Initial Clue"
                     className="max-w-full h-auto rounded-lg border border-gray-300"
                     style={{ maxHeight: '400px' }}
                   />
                 )}
-                {question.clues[0].type === 'link' && (
+                {question.initialClue.type === 'link' && isYouTubeUrl(question.initialClue.content) && (
+                  <div className="w-full aspect-video">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={getYouTubeEmbedUrl(question.initialClue.content)}
+                      title="Initial Clue Video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="rounded-lg"
+                    ></iframe>
+                  </div>
+                )}
+                {question.initialClue.type === 'link' && !isYouTubeUrl(question.initialClue.content) && (
                   <a
-                    href={question.clues[0].content}
+                    href={question.initialClue.content}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 underline text-lg break-all"
                   >
-                    {question.clues[0].content}
+                    {question.initialClue.content}
                   </a>
                 )}
               </div>

@@ -9,7 +9,8 @@ export interface Clue {
 
 export interface Question {
   id: string; // format: "easy-0", "medium-2", etc.
-  clues: Clue[];
+  initialClue?: Clue; // The initial clue shown automatically
+  clues: Clue[]; // Additional clues (up to 3)
   answer: string;
   moviePoster?: string; // URL or base64 image
   movieName?: string;
