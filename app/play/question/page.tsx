@@ -70,27 +70,34 @@ function QuestionViewContent() {
 
   const calculateCurrentScore = () => {
     const { start, deductions } = getDifficultyPoints();
-    let totalDeduction = 0;
     
-    // Calculate total deduction based on revealed clues (excluding initial clue at index 0)
+    // Find the highest clue index revealed (excluding initial clue at index 0)
+    let maxClueIndex = 0;
     revealedClues.forEach(clueIndex => {
-      if (clueIndex > 0 && clueIndex <= 3) {
-        totalDeduction += deductions[clueIndex - 1];
+      if (clueIndex > 0 && clueIndex <= 3 && clueIndex > maxClueIndex) {
+        maxClueIndex = clueIndex;
       }
     });
     
-    return Math.max(0, start - totalDeduction);
+    // Use the deduction for the highest revealed clue (replaces previous deductions)
+    const currentDeduction = maxClueIndex > 0 ? deductions[maxClueIndex - 1] : 0;
+    
+    return Math.max(0, start - currentDeduction);
   };
 
   const getTotalDeduction = () => {
     const { deductions } = getDifficultyPoints();
-    let total = 0;
+    
+    // Find the highest clue index revealed (excluding initial clue at index 0)
+    let maxClueIndex = 0;
     revealedClues.forEach(clueIndex => {
-      if (clueIndex > 0 && clueIndex <= 3) {
-        total += deductions[clueIndex - 1];
+      if (clueIndex > 0 && clueIndex <= 3 && clueIndex > maxClueIndex) {
+        maxClueIndex = clueIndex;
       }
     });
-    return total;
+    
+    // Return the deduction for the highest revealed clue
+    return maxClueIndex > 0 ? deductions[maxClueIndex - 1] : 0;
   };
 
   const handleCloseClue = () => {
