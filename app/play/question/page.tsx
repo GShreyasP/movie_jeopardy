@@ -306,7 +306,7 @@ function QuestionViewContent() {
                       className="rounded-lg"
                     ></iframe>
                     {/* Overlay to hide YouTube title */}
-                    <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none rounded-t-lg"></div>
+                    <div className="absolute top-0 left-0 right-0 h-16 bg-black pointer-events-none rounded-t-lg"></div>
                   </div>
                 )}
                 {question.initialClue.type === 'link' && !question.initialClue.isClip && !isYouTubeUrl(question.initialClue.content) && (
