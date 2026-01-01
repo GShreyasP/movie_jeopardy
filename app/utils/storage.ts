@@ -1,4 +1,4 @@
-import { GameData, Question } from '../types';
+import { GameData, Question, Difficulty } from '../types';
 
 const STORAGE_KEY = 'movie-jeopardy-game-data';
 
