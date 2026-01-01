@@ -11,6 +11,9 @@ export interface Question {
   id: string; // format: "easy-0", "medium-2", etc.
   clues: Clue[];
   answer: string;
+  moviePoster?: string; // URL or base64 image
+  movieName?: string;
+  youtubeVideo?: string; // YouTube URL or video ID
 }
 
 export interface GameData {

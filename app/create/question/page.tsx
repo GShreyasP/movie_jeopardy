@@ -18,6 +18,9 @@ function QuestionEditorContent() {
     { type: 'text', content: '' },
   ]);
   const [answer, setAnswer] = useState('');
+  const [moviePoster, setMoviePoster] = useState('');
+  const [movieName, setMovieName] = useState('');
+  const [youtubeVideo, setYoutubeVideo] = useState('');
 
   useEffect(() => {
     const existing = getQuestion(questionId);
@@ -28,7 +31,10 @@ function QuestionEditorContent() {
         { type: 'text', content: '' },
       ];
       setClues(existing.clues.length === 3 ? existing.clues : defaultClues);
-      setAnswer(existing.answer);
+      setAnswer(existing.answer || '');
+      setMoviePoster(existing.moviePoster || '');
+      setMovieName(existing.movieName || '');
+      setYoutubeVideo(existing.youtubeVideo || '');
     }
   }, [questionId]);
 
@@ -56,6 +62,18 @@ function QuestionEditorContent() {
     }
   };
 
+  const handlePosterUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setMoviePoster(imageUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = () => {
     if (!questionId) return;
 
@@ -63,6 +81,9 @@ function QuestionEditorContent() {
       id: questionId,
       clues: clues.filter(clue => clue.content.trim() !== ''),
       answer: answer.trim(),
+      moviePoster: moviePoster.trim() || undefined,
+      movieName: movieName.trim() || undefined,
+      youtubeVideo: youtubeVideo.trim() || undefined,
     };
 
     saveQuestion(question);
@@ -189,6 +210,62 @@ function QuestionEditorContent() {
               placeholder="Enter the answer..."
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-black"
             />
+          </div>
+
+          {/* Movie Information */}
+          <div className="border-t-2 border-gray-300 pt-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Movie Information (Optional)</h2>
+            
+            {/* Movie Poster */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Movie Poster
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePosterUpload}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {moviePoster && (
+                <div className="mt-2">
+                  <img
+                    src={moviePoster}
+                    alt="Movie Poster"
+                    className="max-w-full h-auto rounded-lg border border-gray-300"
+                    style={{ maxHeight: '300px' }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Movie Name */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Movie Name
+              </label>
+              <input
+                type="text"
+                value={movieName}
+                onChange={(e) => setMovieName(e.target.value)}
+                placeholder="Enter movie name..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              />
+            </div>
+
+            {/* YouTube Video */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                YouTube Video URL
+              </label>
+              <input
+                type="url"
+                value={youtubeVideo}
+                onChange={(e) => setYoutubeVideo(e.target.value)}
+                placeholder="Enter YouTube URL (e.g., https://www.youtube.com/watch?v=...) or video ID"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+              />
+            </div>
           </div>
 
           {/* Save Button */}

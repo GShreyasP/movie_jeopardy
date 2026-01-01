@@ -73,6 +73,25 @@ function QuestionViewContent() {
     router.push('/play/board');
   };
 
+  const getYouTubeEmbedUrl = (url: string): string => {
+    if (!url) return '';
+    // Extract video ID from various YouTube URL formats
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+    
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    }
+    
+    // If it's already just a video ID
+    if (url.length === 11 && !url.includes('/') && !url.includes('?')) {
+      return `https://www.youtube.com/embed/${url}?autoplay=1`;
+    }
+    
+    return '';
+  };
+
   const currentClue = currentClueIndex !== null ? question.clues[currentClueIndex] : null;
 
   return (
@@ -145,11 +164,6 @@ function QuestionViewContent() {
             >
               {showAnswer ? 'Hide Answer' : 'Show Answer'}
             </button>
-            {showAnswer && (
-              <div className="bg-green-50 border-2 border-green-500 rounded-lg p-4">
-                <p className="text-xl font-bold text-gray-800">{question.answer}</p>
-              </div>
-            )}
           </div>
 
           {/* Score Input */}
@@ -247,6 +261,80 @@ function QuestionViewContent() {
             <button
               onClick={handleCloseClue}
               className="mt-6 w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg rounded-lg transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Answer Popup Modal */}
+      {showAnswer && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <button
+              onClick={() => setShowAnswer(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-bold z-10"
+            >
+              ×
+            </button>
+            <div className="grid grid-cols-2 gap-6">
+              {/* Left Half - Movie Poster */}
+              <div className="flex items-center justify-center">
+                {question.moviePoster ? (
+                  <img
+                    src={question.moviePoster}
+                    alt="Movie Poster"
+                    className="max-w-full h-auto rounded-lg shadow-lg"
+                    style={{ maxHeight: '70vh' }}
+                  />
+                ) : (
+                  <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-500">No poster available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Half - Movie Name (Upper) and YouTube Video (Lower) */}
+              <div className="flex flex-col gap-4">
+                {/* Upper Right - Movie Name */}
+                <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-lg p-6 min-h-[200px]">
+                  <div className="text-center">
+                    <h3 className="text-3xl font-bold text-gray-800 mb-2">
+                      {question.movieName || question.answer}
+                    </h3>
+                    {!question.movieName && (
+                      <p className="text-sm text-gray-500">(Answer: {question.answer})</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Lower Right - YouTube Video */}
+                <div className="flex-1 bg-gray-900 rounded-lg p-4 min-h-[300px] flex items-center justify-center">
+                  {question.youtubeVideo ? (
+                    <div className="w-full aspect-video">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        src={getYouTubeEmbedUrl(question.youtubeVideo)}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="rounded-lg"
+                      ></iframe>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-center">
+                      <p>No video available</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAnswer(false)}
+              className="mt-6 w-full px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-lg transition-colors"
             >
               Close
             </button>
