@@ -50,7 +50,11 @@ function QuestionViewContent() {
 
   const handleShowClue = (index: number) => {
     setCurrentClueIndex(index);
-    setRevealedClues(prev => new Set([...prev, index]));
+    setRevealedClues(prev => {
+      const newSet = new Set(prev);
+      newSet.add(index);
+      return newSet;
+    });
   };
 
   const getDifficultyPoints = () => {
