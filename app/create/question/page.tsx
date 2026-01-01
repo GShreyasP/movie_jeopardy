@@ -61,7 +61,7 @@ function QuestionEditorContent() {
   const processImageFileForClue = async (file: File, isInitial: boolean) => {
     if (file.type.startsWith('image/')) {
       try {
-        const compressedImage = await compressImage(file, 800, 800, 0.7);
+        const compressedImage = await compressImage(file);
         if (isInitial) {
           setInitialClue({ ...initialClue, content: compressedImage });
         }
@@ -122,7 +122,7 @@ function QuestionEditorContent() {
   const processClueImageFile = async (index: number, file: File) => {
     if (file.type.startsWith('image/')) {
       try {
-        const compressedImage = await compressImage(file, 800, 800, 0.7);
+        const compressedImage = await compressImage(file);
         handleClueContentChange(index, compressedImage);
       } catch (error) {
         console.error('Error compressing image:', error);
@@ -163,7 +163,7 @@ function QuestionEditorContent() {
   const processImageFile = async (file: File) => {
     if (file.type.startsWith('image/')) {
       try {
-        const compressedImage = await compressImage(file, 800, 800, 0.7);
+        const compressedImage = await compressImage(file);
         setMoviePoster(compressedImage);
       } catch (error) {
         console.error('Error compressing image:', error);

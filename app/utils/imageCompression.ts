@@ -1,6 +1,6 @@
 // Utility function to compress images before storing in localStorage
 
-export function compressImage(file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.7): Promise<string> {
+export function compressImage(file: File, maxWidth: number = 500, maxHeight: number = 500, quality: number = 0.5): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
