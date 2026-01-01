@@ -17,7 +17,7 @@ function QuestionViewContent() {
   const [currentClueIndex, setCurrentClueIndex] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [scoreInput, setScoreInput] = useState<{ [key: number]: string }>({});
-  const [revealedClues, setRevealedClues] = useState<Set<number>>(new Set([0])); // Initial clue is always revealed
+  const [revealedClues, setRevealedClues] = useState<Set<number>>(new Set()); // Track which additional clues have been revealed
 
   useEffect(() => {
     const q = getQuestion(questionId);
@@ -50,11 +50,6 @@ function QuestionViewContent() {
 
   const handleShowClue = (index: number) => {
     setCurrentClueIndex(index);
-    setRevealedClues(prev => {
-      const newSet = new Set(prev);
-      newSet.add(index);
-      return newSet;
-    });
   };
 
   const getDifficultyPoints = () => {
@@ -75,16 +70,17 @@ function QuestionViewContent() {
   const calculateCurrentScore = () => {
     const { start, deductions } = getDifficultyPoints();
     
-    // Find the highest clue index revealed (excluding initial clue at index 0)
-    let maxClueIndex = 0;
-    revealedClues.forEach(clueIndex => {
-      if (clueIndex > 0 && clueIndex <= 3 && clueIndex > maxClueIndex) {
-        maxClueIndex = clueIndex;
+    // Find the highest clue number revealed (1, 2, or 3)
+    let maxClueNumber = 0;
+    revealedClues.forEach(clueNumber => {
+      if (clueNumber >= 1 && clueNumber <= 3 && clueNumber > maxClueNumber) {
+        maxClueNumber = clueNumber;
       }
     });
     
     // Use the deduction for the highest revealed clue (replaces previous deductions)
-    const currentDeduction = maxClueIndex > 0 ? deductions[maxClueIndex - 1] : 0;
+    // clueNumber 1 -> deductions[0], clueNumber 2 -> deductions[1], clueNumber 3 -> deductions[2]
+    const currentDeduction = maxClueNumber > 0 ? deductions[maxClueNumber - 1] : 0;
     
     return Math.max(0, start - currentDeduction);
   };
@@ -92,16 +88,16 @@ function QuestionViewContent() {
   const getTotalDeduction = () => {
     const { deductions } = getDifficultyPoints();
     
-    // Find the highest clue index revealed (excluding initial clue at index 0)
-    let maxClueIndex = 0;
-    revealedClues.forEach(clueIndex => {
-      if (clueIndex > 0 && clueIndex <= 3 && clueIndex > maxClueIndex) {
-        maxClueIndex = clueIndex;
+    // Find the highest clue number revealed (1, 2, or 3)
+    let maxClueNumber = 0;
+    revealedClues.forEach(clueNumber => {
+      if (clueNumber >= 1 && clueNumber <= 3 && clueNumber > maxClueNumber) {
+        maxClueNumber = clueNumber;
       }
     });
     
     // Return the deduction for the highest revealed clue
-    return maxClueIndex > 0 ? deductions[maxClueIndex - 1] : 0;
+    return maxClueNumber > 0 ? deductions[maxClueNumber - 1] : 0;
   };
 
   const handleCloseClue = () => {
@@ -238,15 +234,26 @@ function QuestionViewContent() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-800">Click to Reveal Clues</h2>
             <div className="grid grid-cols-3 gap-4">
-              {question.clues.slice(0, 3).map((clue, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleShowClue(index)}
-                  className="px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg rounded-lg shadow-lg transition-colors"
-                >
-                  Clue {index + 1}
-                </button>
-              ))}
+              {question.clues.slice(0, 3).map((clue, index) => {
+                const clueNumber = index + 1; // Clue 1, 2, or 3
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      handleShowClue(index);
+                      // Track clue number (1, 2, or 3) for scoring
+                      setRevealedClues(prev => {
+                        const newSet = new Set(prev);
+                        newSet.add(clueNumber);
+                        return newSet;
+                      });
+                    }}
+                    className="px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg rounded-lg shadow-lg transition-colors"
+                  >
+                    Clue {clueNumber}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
