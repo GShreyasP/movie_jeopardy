@@ -124,6 +124,44 @@ function QuestionViewContent() {
 
   const getYouTubeEmbedUrl = (url: string): string => {
     if (!url) return '';
+    
+    // Handle YouTube clip URLs (youtube.com/clip/...)
+    if (url.includes('youtube.com/clip/')) {
+      // Extract clip ID from clip URL
+      const clipMatch = url.match(/youtube\.com\/clip\/([^?&#]+)/);
+      if (clipMatch && clipMatch[1]) {
+        return `https://www.youtube.com/embed/${clipMatch[1]}?autoplay=1`;
+      }
+    }
+    
+    // Handle YouTube shorts (youtube.com/shorts/...)
+    if (url.includes('youtube.com/shorts/')) {
+      const shortsMatch = url.match(/youtube\.com\/shorts\/([^?&#]+)/);
+      if (shortsMatch && shortsMatch[1]) {
+        return `https://www.youtube.com/embed/${shortsMatch[1]}?autoplay=1`;
+      }
+    }
+    
+    // Handle YouTube watch URLs with timestamp/clip parameters
+    if (url.includes('youtube.com/watch')) {
+      // Extract video ID from watch URL
+      const watchMatch = url.match(/[?&]v=([^&#]+)/);
+      if (watchMatch && watchMatch[1]) {
+        // Preserve any timestamp or clip parameters
+        const urlObj = new URL(url);
+        const params = new URLSearchParams(urlObj.search);
+        const videoId = params.get('v');
+        if (videoId) {
+          let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          // Add timestamp if present
+          if (params.get('t')) {
+            embedUrl += `&start=${params.get('t')}`;
+          }
+          return embedUrl;
+        }
+      }
+    }
+    
     // Extract video ID from various YouTube URL formats
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);

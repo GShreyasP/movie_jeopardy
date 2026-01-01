@@ -33,7 +33,6 @@ function QuestionEditorContent() {
       ];
       setInitialClue(existing.initialClue || { type: 'text', content: '' });
       setClues(existing.clues.length === 3 ? existing.clues : defaultClues);
-      setAnswer(existing.answer || '');
       setMoviePoster(existing.moviePoster || '');
       setMovieName(existing.movieName || '');
       setYoutubeVideo(existing.youtubeVideo || '');
@@ -125,14 +124,28 @@ function QuestionEditorContent() {
   const handleSave = () => {
     if (!questionId) return;
 
+    // Validate required movie information
+    if (!movieName.trim()) {
+      alert('Movie Name is required');
+      return;
+    }
+    if (!moviePoster.trim()) {
+      alert('Movie Poster is required');
+      return;
+    }
+    if (!youtubeVideo.trim()) {
+      alert('YouTube Video is required');
+      return;
+    }
+
     const question: Question = {
       id: questionId,
       initialClue: initialClue.content.trim() ? initialClue : undefined,
       clues: clues.filter(clue => clue.content.trim() !== ''),
-      answer: answer.trim(),
-      moviePoster: moviePoster.trim() || undefined,
-      movieName: movieName.trim() || undefined,
-      youtubeVideo: youtubeVideo.trim() || undefined,
+      answer: movieName.trim(), // Use movie name as answer
+      moviePoster: moviePoster.trim(),
+      movieName: movieName.trim(),
+      youtubeVideo: youtubeVideo.trim(),
     };
 
     saveQuestion(question);
@@ -333,23 +346,9 @@ function QuestionEditorContent() {
             ))}
           </div>
 
-          {/* Answer */}
-          <div className="border-t-2 border-gray-300 pt-6">
-            <label className="block text-lg font-semibold text-gray-800 mb-2">
-              Answer
-            </label>
-            <input
-              type="text"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Enter the answer..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-black"
-            />
-          </div>
-
           {/* Movie Information */}
           <div className="border-t-2 border-gray-300 pt-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Movie Information (Optional)</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Movie Information</h2>
             
             {/* Movie Poster */}
             <div className="mb-4">
