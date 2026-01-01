@@ -14,14 +14,23 @@ export default function PlayBoardPage() {
   const columns = 6;
 
   useEffect(() => {
+    const currentSession = getPlaySession();
+    if (!currentSession) {
+      router.push('/play');
+      return;
+    }
+    setSession(currentSession);
+    
     const interval = setInterval(() => {
-      setSession(getPlaySession());
+      const updatedSession = getPlaySession();
+      if (updatedSession) {
+        setSession(updatedSession);
+      }
     }, 100);
     return () => clearInterval(interval);
-  }, []);
+  }, [router]);
 
   if (!session) {
-    router.push('/play');
     return null;
   }
 
