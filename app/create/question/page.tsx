@@ -18,7 +18,6 @@ function QuestionEditorContent() {
     { type: 'text', content: '' },
     { type: 'text', content: '' },
   ]);
-  const [answer, setAnswer] = useState('');
   const [moviePoster, setMoviePoster] = useState('');
   const [movieName, setMovieName] = useState('');
   const [youtubeVideo, setYoutubeVideo] = useState('');
