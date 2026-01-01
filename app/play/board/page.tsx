@@ -72,7 +72,7 @@ export default function PlayBoardPage() {
                         !isAvailable
                           ? 'bg-gray-500 cursor-not-allowed opacity-50'
                           : isAnswered
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          ? 'bg-gray-700 hover:bg-gray-600 text-white'
                           : 'bg-yellow-500 hover:bg-yellow-600 text-black'
                       }`}
                     >
