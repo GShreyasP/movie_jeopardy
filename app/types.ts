@@ -16,3 +16,14 @@ export interface Question {
 export interface GameData {
   questions: Question[];
 }
+
+export interface Team {
+  id: number;
+  name: string;
+  score: number;
+}
+
+export interface PlaySession {
+  teams: Team[];
+  answeredQuestions: string[]; // question IDs that have been answered
+}
