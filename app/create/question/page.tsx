@@ -30,7 +30,7 @@ function QuestionEditorContent() {
         { type: 'text', content: '' },
         { type: 'text', content: '' },
       ];
-      setInitialClue(existing.initialClue || { type: 'text', content: '' });
+      setInitialClue(existing.initialClue || { type: 'text', content: '', isClip: false });
       setClues(existing.clues.length === 3 ? existing.clues : defaultClues);
       setMoviePoster(existing.moviePoster || '');
       setMovieName(existing.movieName || '');
@@ -39,11 +39,15 @@ function QuestionEditorContent() {
   }, [questionId]);
 
   const handleInitialClueTypeChange = (type: ClueType) => {
-    setInitialClue({ type, content: '' });
+    setInitialClue({ type, content: '', isClip: false });
   };
 
   const handleInitialClueContentChange = (content: string) => {
     setInitialClue({ ...initialClue, content });
+  };
+
+  const handleInitialClueIsClipChange = (isClip: boolean) => {
+    setInitialClue({ ...initialClue, isClip });
   };
 
   const handleInitialClueImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,13 +64,19 @@ function QuestionEditorContent() {
 
   const handleClueTypeChange = (index: number, type: ClueType) => {
     const newClues = [...clues];
-    newClues[index] = { type, content: '' };
+    newClues[index] = { type, content: '', isClip: false };
     setClues(newClues);
   };
 
   const handleClueContentChange = (index: number, content: string) => {
     const newClues = [...clues];
     newClues[index].content = content;
+    setClues(newClues);
+  };
+
+  const handleClueIsClipChange = (index: number, isClip: boolean) => {
+    const newClues = [...clues];
+    newClues[index] = { ...newClues[index], isClip };
     setClues(newClues);
   };
 
@@ -246,13 +256,24 @@ function QuestionEditorContent() {
               )}
 
               {initialClue.type === 'link' && (
-                <input
-                  type="url"
-                  value={initialClue.content}
-                  onChange={(e) => handleInitialClueContentChange(e.target.value)}
-                  placeholder="Enter link URL (e.g., https://example.com)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-                />
+                <div className="space-y-2">
+                  <input
+                    type="url"
+                    value={initialClue.content}
+                    onChange={(e) => handleInitialClueContentChange(e.target.value)}
+                    placeholder="Enter link URL (e.g., https://example.com)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                  />
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={initialClue.isClip || false}
+                      onChange={(e) => handleInitialClueIsClipChange(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span>This is a YouTube clip</span>
+                  </label>
+                </div>
               )}
             </div>
           </div>
@@ -333,13 +354,24 @@ function QuestionEditorContent() {
                 )}
 
                 {clue.type === 'link' && (
-                  <input
-                    type="url"
-                    value={clue.content}
-                    onChange={(e) => handleClueContentChange(index, e.target.value)}
-                    placeholder="Enter link URL (e.g., https://example.com)"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-                  />
+                  <div className="space-y-2">
+                    <input
+                      type="url"
+                      value={clue.content}
+                      onChange={(e) => handleClueContentChange(index, e.target.value)}
+                      placeholder="Enter link URL (e.g., https://example.com)"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                    />
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={clue.isClip || false}
+                        onChange={(e) => handleClueIsClipChange(index, e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span>This is a YouTube clip</span>
+                    </label>
+                  </div>
                 )}
               </div>
             ))}

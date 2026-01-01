@@ -5,6 +5,7 @@ export type ClueType = 'text' | 'image' | 'link';
 export interface Clue {
   type: ClueType;
   content: string; // text content, image URL, or link URL
+  isClip?: boolean; // true if the link is a YouTube clip
 }
 
 export interface Question {

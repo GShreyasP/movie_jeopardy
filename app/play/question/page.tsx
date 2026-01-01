@@ -272,7 +272,28 @@ function QuestionViewContent() {
                     style={{ maxHeight: '400px' }}
                   />
                 )}
-                {question.initialClue.type === 'link' && isYouTubeUrl(question.initialClue.content) && (
+                {question.initialClue.type === 'link' && question.initialClue.isClip && (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        const width = 800;
+                        const height = 600;
+                        const left = (window.screen.width - width) / 2;
+                        const top = (window.screen.height - height) / 2;
+                        window.open(
+                          question.initialClue.content,
+                          'YouTubeClip',
+                          `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=yes,status=no,menubar=no,scrollbars=yes,resizable=yes`
+                        );
+                      }}
+                      className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors"
+                    >
+                      Open YouTube Clip in Browser
+                    </button>
+                    <p className="text-sm text-gray-600">Click to open the clip in a new window</p>
+                  </div>
+                )}
+                {question.initialClue.type === 'link' && !question.initialClue.isClip && isYouTubeUrl(question.initialClue.content) && (
                   <div className="w-full aspect-video">
                     <iframe
                       width="100%"
@@ -286,7 +307,7 @@ function QuestionViewContent() {
                     ></iframe>
                   </div>
                 )}
-                {question.initialClue.type === 'link' && !isYouTubeUrl(question.initialClue.content) && (
+                {question.initialClue.type === 'link' && !question.initialClue.isClip && !isYouTubeUrl(question.initialClue.content) && (
                   <a
                     href={question.initialClue.content}
                     target="_blank"
@@ -416,7 +437,28 @@ function QuestionViewContent() {
                   style={{ maxHeight: '70vh' }}
                 />
               )}
-              {currentClue.type === 'link' && isYouTubeUrl(currentClue.content) && (
+              {currentClue.type === 'link' && currentClue.isClip && (
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      const width = 800;
+                      const height = 600;
+                      const left = (window.screen.width - width) / 2;
+                      const top = (window.screen.height - height) / 2;
+                      window.open(
+                        currentClue.content,
+                        'YouTubeClip',
+                        `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=yes,status=no,menubar=no,scrollbars=yes,resizable=yes`
+                      );
+                    }}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors"
+                  >
+                    Open YouTube Clip in Browser
+                  </button>
+                  <p className="text-sm text-gray-600">Click to open the clip in a new window</p>
+                </div>
+              )}
+              {currentClue.type === 'link' && !currentClue.isClip && isYouTubeUrl(currentClue.content) && (
                 <div className="w-full aspect-video">
                   <iframe
                     width="100%"
@@ -430,7 +472,7 @@ function QuestionViewContent() {
                   ></iframe>
                 </div>
               )}
-              {currentClue.type === 'link' && !isYouTubeUrl(currentClue.content) && (
+              {currentClue.type === 'link' && !currentClue.isClip && !isYouTubeUrl(currentClue.content) && (
                 <div>
                   <a
                     href={currentClue.content}
