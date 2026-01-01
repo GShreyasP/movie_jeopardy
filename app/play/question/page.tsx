@@ -92,6 +92,11 @@ function QuestionViewContent() {
     return '';
   };
 
+  const isYouTubeUrl = (url: string): boolean => {
+    if (!url) return false;
+    return url.includes('youtube.com') || url.includes('youtu.be') || (url.length === 11 && !url.includes('/') && !url.includes('watch'));
+  };
+
   const currentClue = currentClueIndex !== null ? question.clues[currentClueIndex] : null;
 
   return (
@@ -228,7 +233,7 @@ function QuestionViewContent() {
           <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
             <button
               onClick={handleCloseClue}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-bold"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-bold z-10"
             >
               ×
             </button>
@@ -245,7 +250,21 @@ function QuestionViewContent() {
                   style={{ maxHeight: '70vh' }}
                 />
               )}
-              {currentClue.type === 'link' && (
+              {currentClue.type === 'link' && isYouTubeUrl(currentClue.content) && (
+                <div className="w-full aspect-video">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={getYouTubeEmbedUrl(currentClue.content)}
+                    title={`Clue ${currentClueIndex + 1} Video`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded-lg"
+                  ></iframe>
+                </div>
+              )}
+              {currentClue.type === 'link' && !isYouTubeUrl(currentClue.content) && (
                 <div>
                   <a
                     href={currentClue.content}
