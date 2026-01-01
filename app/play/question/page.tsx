@@ -257,7 +257,7 @@ function QuestionViewContent() {
 
         <div className="bg-white rounded-lg shadow-xl p-6 space-y-6 mb-6">
           {/* Initial Clue */}
-          {question.initialClue && (
+          {question.initialClue && question.initialClue.content && question.initialClue.content.trim() && (
             <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
               <h2 className="text-xl font-bold text-gray-800 mb-3">Initial Clue</h2>
               <div className="text-gray-700">
