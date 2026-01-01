@@ -294,7 +294,7 @@ function QuestionViewContent() {
                   </div>
                 )}
                 {question.initialClue.type === 'link' && !question.initialClue.isClip && isYouTubeUrl(question.initialClue.content) && (
-                  <div className="w-full aspect-video">
+                  <div className="w-full aspect-video relative">
                     <iframe
                       width="100%"
                       height="100%"
@@ -305,6 +305,8 @@ function QuestionViewContent() {
                       allowFullScreen
                       className="rounded-lg"
                     ></iframe>
+                    {/* Overlay to hide YouTube title */}
+                    <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none rounded-t-lg"></div>
                   </div>
                 )}
                 {question.initialClue.type === 'link' && !question.initialClue.isClip && !isYouTubeUrl(question.initialClue.content) && (
@@ -459,7 +461,7 @@ function QuestionViewContent() {
                 </div>
               )}
               {currentClue.type === 'link' && !currentClue.isClip && isYouTubeUrl(currentClue.content) && (
-                <div className="w-full aspect-video">
+                <div className="w-full aspect-video relative">
                   <iframe
                     width="100%"
                     height="100%"
@@ -470,6 +472,8 @@ function QuestionViewContent() {
                     allowFullScreen
                     className="rounded-lg"
                   ></iframe>
+                  {/* Overlay to hide YouTube title */}
+                  <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none rounded-t-lg"></div>
                 </div>
               )}
               {currentClue.type === 'link' && !currentClue.isClip && !isYouTubeUrl(currentClue.content) && (
@@ -539,7 +543,7 @@ function QuestionViewContent() {
                 {/* Lower Right - YouTube Video */}
                 <div className="flex-1 bg-gray-900 rounded-lg p-4 min-h-[300px] flex items-center justify-center">
                   {question.youtubeVideo ? (
-                    <div className="w-full aspect-video">
+                    <div className="w-full aspect-video relative">
                       <iframe
                         width="100%"
                         height="100%"
@@ -550,6 +554,8 @@ function QuestionViewContent() {
                         allowFullScreen
                         className="rounded-lg"
                       ></iframe>
+                      {/* Overlay to hide YouTube title */}
+                      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none rounded-t-lg"></div>
                     </div>
                   ) : (
                     <div className="text-gray-400 text-center">
