@@ -39,21 +39,29 @@ export default function PlayPage() {
               </div>
             ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <button
+                onClick={handleContinueGame}
+                className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-lg transition-colors"
+              >
+                Continue Game
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('movie-jeopardy-play-session');
+                  setSession(null);
+                }}
+                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-lg rounded-lg transition-colors"
+              >
+                New Game
+              </button>
+            </div>
             <button
-              onClick={handleContinueGame}
-              className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-lg transition-colors"
+              onClick={() => router.push('/')}
+              className="w-full px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold text-lg rounded-lg transition-colors"
             >
-              Continue Game
-            </button>
-            <button
-              onClick={() => {
-                localStorage.removeItem('movie-jeopardy-play-session');
-                setSession(null);
-              }}
-              className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold text-lg rounded-lg transition-colors"
-            >
-              New Game
+              Back to Home
             </button>
           </div>
         </div>
