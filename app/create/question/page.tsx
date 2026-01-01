@@ -53,12 +53,44 @@ function QuestionEditorContent() {
   const handleInitialClueImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      processImageFileForClue(file, true);
+    }
+  };
+
+  const processImageFileForClue = (file: File, isInitial: boolean) => {
+    if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        setInitialClue({ ...initialClue, content: imageUrl });
+        if (isInitial) {
+          setInitialClue({ ...initialClue, content: imageUrl });
+        } else {
+          // This will be handled by the specific clue index
+        }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleInitialClueDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleInitialClueDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleInitialClueDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (initialClue.type === 'image') {
+      const file = e.dataTransfer.files?.[0];
+      if (file) {
+        processImageFileForClue(file, true);
+      }
     }
   };
 
@@ -83,12 +115,40 @@ function QuestionEditorContent() {
   const handleImageUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      processClueImageFile(index, file);
+    }
+  };
+
+  const processClueImageFile = (index: number, file: File) => {
+    if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
         handleClueContentChange(index, imageUrl);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClueDragOver = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleClueDragLeave = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleClueDrop = (index: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (clues[index].type === 'image') {
+      const file = e.dataTransfer.files?.[0];
+      if (file) {
+        processClueImageFile(index, file);
+      }
     }
   };
 
@@ -235,21 +295,51 @@ function QuestionEditorContent() {
               )}
 
               {initialClue.type === 'image' && (
-                <div className="space-y-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleInitialClueImageUpload}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                  {initialClue.content && (
-                    <div className="mt-2">
+                <div
+                  onDragOver={handleInitialClueDragOver}
+                  onDragLeave={handleInitialClueDragLeave}
+                  onDrop={handleInitialClueDrop}
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer"
+                >
+                  {initialClue.content ? (
+                    <div className="space-y-2">
                       <img
                         src={initialClue.content}
                         alt="Initial Clue"
-                        className="max-w-full h-auto rounded-lg border border-gray-300"
+                        className="max-w-full h-auto rounded-lg border border-gray-300 mx-auto"
                         style={{ maxHeight: '300px' }}
                       />
+                      <p className="text-sm text-gray-600">Drop a new image here or click to upload</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleInitialClueImageUpload}
+                        className="hidden"
+                        id="initial-clue-upload"
+                      />
+                      <label
+                        htmlFor="initial-clue-upload"
+                        className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                      >
+                        Change Image
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-gray-600">Drag and drop an image here, or</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleInitialClueImageUpload}
+                        className="hidden"
+                        id="initial-clue-upload"
+                      />
+                      <label
+                        htmlFor="initial-clue-upload"
+                        className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                      >
+                        Choose File
+                      </label>
                     </div>
                   )}
                 </div>
@@ -333,21 +423,51 @@ function QuestionEditorContent() {
                 )}
 
                 {clue.type === 'image' && (
-                  <div className="space-y-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(index, e)}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    />
-                    {clue.content && (
-                      <div className="mt-2">
+                  <div
+                    onDragOver={(e) => handleClueDragOver(index, e)}
+                    onDragLeave={(e) => handleClueDragLeave(index, e)}
+                    onDrop={(e) => handleClueDrop(index, e)}
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer"
+                  >
+                    {clue.content ? (
+                      <div className="space-y-2">
                         <img
                           src={clue.content}
                           alt={`Clue ${index + 1}`}
-                          className="max-w-full h-auto rounded-lg border border-gray-300"
+                          className="max-w-full h-auto rounded-lg border border-gray-300 mx-auto"
                           style={{ maxHeight: '300px' }}
                         />
+                        <p className="text-sm text-gray-600">Drop a new image here or click to upload</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(index, e)}
+                          className="hidden"
+                          id={`clue-${index}-upload`}
+                        />
+                        <label
+                          htmlFor={`clue-${index}-upload`}
+                          className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                        >
+                          Change Image
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-gray-600">Drag and drop an image here, or</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(index, e)}
+                          className="hidden"
+                          id={`clue-${index}-upload`}
+                        />
+                        <label
+                          htmlFor={`clue-${index}-upload`}
+                          className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                        >
+                          Choose File
+                        </label>
                       </div>
                     )}
                   </div>
