@@ -65,12 +65,38 @@ function QuestionEditorContent() {
   const handlePosterUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      processImageFile(file);
+    }
+  };
+
+  const processImageFile = (file: File) => {
+    if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
         setMoviePoster(imageUrl);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processImageFile(file);
     }
   };
 
@@ -221,22 +247,54 @@ function QuestionEditorContent() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Movie Poster
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePosterUpload}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {moviePoster && (
-                <div className="mt-2">
-                  <img
-                    src={moviePoster}
-                    alt="Movie Poster"
-                    className="max-w-full h-auto rounded-lg border border-gray-300"
-                    style={{ maxHeight: '300px' }}
-                  />
-                </div>
-              )}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer"
+              >
+                {moviePoster ? (
+                  <div className="space-y-2">
+                    <img
+                      src={moviePoster}
+                      alt="Movie Poster"
+                      className="max-w-full h-auto rounded-lg border border-gray-300 mx-auto"
+                      style={{ maxHeight: '300px' }}
+                    />
+                    <p className="text-sm text-gray-600">Drop a new image here or click to upload</p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterUpload}
+                      className="hidden"
+                      id="poster-upload"
+                    />
+                    <label
+                      htmlFor="poster-upload"
+                      className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                    >
+                      Change Image
+                    </label>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-gray-600">Drag and drop an image here, or</p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterUpload}
+                      className="hidden"
+                      id="poster-upload"
+                    />
+                    <label
+                      htmlFor="poster-upload"
+                      className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg cursor-pointer text-sm font-semibold"
+                    >
+                      Choose File
+                    </label>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Movie Name */}
